@@ -1,7 +1,12 @@
 import functions
 import PySimpleGUI as sg
+import time
 
-# creating the input box and label
+# theme
+sg.theme("DarkBlue9")
+
+# creating the input box and labels
+date_time = sg.Text('', key='date_time')
 label = sg.Text("Type in a To-Do")
 input_box = sg.InputText(tooltip="Enter a todo", key='todo')
 
@@ -13,16 +18,20 @@ exit_button = sg.Button("Exit")
 
 # creating the to-do list widget
 list_box = sg.Listbox(values=functions.get_todos(), key='items',
-                      enable_events=True, size=[45, 10])
+                      enable_events=True, size=(45, 10))
 
 # creating and displaying the window
 window = sg.Window('My To-Do App',
-                   layout=[[label], [input_box, add_button],
+                   layout=[[date_time],
+                           [label],
+                           [input_box, add_button],
                            [list_box, edit_button, complete_button],
                            [exit_button]], font=('Helvetica', 12))
 
+# execution
 while True:
-    event, value = window.read()
+    event, value = window.read(timeout=200)
+    window['date_time'].update(time.strftime("%b %d, %Y %H:%M:%S"))
     print(1, event)
     print(2, value['items'])
     print(3, value['todo'])
@@ -34,30 +43,37 @@ while True:
         window['items'].update(values=todos)
 
     elif event == "Edit":
-        existing_todo = value['items'][0]
-        new_todo = value['todo']
+        try:
+            existing_todo = value['items'][0]
+            new_todo = value['todo']
 
-        todos = functions.get_todos()
-        index = todos.index(existing_todo)
-        todos[index] = new_todo + '\n'
-        functions.write_todos(todos)
-        window['items'].update(values=todos)
-        window['todo'].update(value='')
+            todos = functions.get_todos()
+            index = todos.index(existing_todo)
+            todos[index] = new_todo + '\n'
+            functions.write_todos(todos)
+            window['items'].update(values=todos)
+            window['todo'].update(value='')
+        except IndexError:
+            sg.popup('You must select an item to edit', font=('Helvetica', 12))
+            continue
 
     elif event == "Complete":
-        selected_todo = value['items'][0]
+        try:
+            selected_todo = value['items'][0]
 
-        todos = functions.get_todos()
-        todos.remove(selected_todo)
-        functions.write_todos(todos)
-        window['items'].update(values=todos)
-        window['todo'].update(value='')
+            todos = functions.get_todos()
+            todos.remove(selected_todo)
+            functions.write_todos(todos)
+            window['items'].update(values=todos)
+            window['todo'].update(value='')
+        except IndexError:
+            sg.popup('You must select an item to complete', font=('Helvetica', 12))
 
     elif event == 'items':
         window['todo'].update(value=value['items'][0])
 
     elif event == 'Exit':
-        exit()
+        break
 
     elif event == sg.WINDOW_CLOSED:
         break
