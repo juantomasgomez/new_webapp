@@ -11,9 +11,10 @@ label = sg.Text("Type in a To-Do")
 input_box = sg.InputText(tooltip="Enter a todo", key='todo')
 
 # creating the buttons
-add_button = sg.Button("Add")
+add_button = sg.Button(image_source="add.png", image_size=(100,30), tooltip='Add a todo', key='Add')
 edit_button = sg.Button("Edit")
-complete_button = sg.Button("Complete")
+complete_button = sg.Button(image_size=(100,100), image_source="complete.png", tooltip="Mark selected item as complete",
+                            key="Complete")
 exit_button = sg.Button("Exit")
 
 # creating the to-do list widget
@@ -35,7 +36,8 @@ while True:
     print(1, event)
     print(2, value['items'])
     print(3, value['todo'])
-    if event == "Add":
+
+    if event == 'Add':
         todos = functions.get_todos()
         new_todo = value['todo'] + "\n"
         todos.append(new_todo)
