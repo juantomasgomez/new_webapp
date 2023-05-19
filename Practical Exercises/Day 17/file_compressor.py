@@ -1,6 +1,8 @@
 import PySimpleGUI as sg
 from zip_creator import make_archive
 
+sg.theme('Black')
+
 label1 = sg.Text('Select files to compress')
 input1 = sg.Input()
 # This is a button
